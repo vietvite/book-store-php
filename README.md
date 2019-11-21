@@ -1,6 +1,6 @@
 # book-store
 
-## Settup
+## Setup
 - Rename `environment.example.php` to `environment.php` then add your ENV variable into it
 - Import sql database to your mysql database
 
