@@ -37,8 +37,8 @@
               <a href="detail.php?bookId=<?php echo $value->bookId ?>" class="text-decoration-none text-dark">
                 <img src="../public/<?php echo $value->imageUrl ?>" class="card-img-top" alt="img">
                 <div class="card-body text-center pt-0">
-                  <h6 class="card-title mb-1" title="<?php echo $value->bookName ?>"><?php echo $value->bookName ?></h6>
-                  <p class="mb-1 text-muted"><?php echo $value->author ?></p>
+                  <h6 class="card-title mb-1 text-truncate" title="<?php echo $value->bookName ?>"><?php echo $value->bookName ?></h6>
+                  <p class="mb-1 text-muted text-truncate"><?php echo $value->author ?></p>
                   <p class="text-muted d-inline align-top" style="text-decoration: line-through; font-size: 0.75rem"><?php echo $value->coverPrice ?> đ</p>
                   <p class="font-weight-bold d-inline pl-2 pl-md-4"><?php echo round((($value->price - $value->coverPrice)/$value->coverPrice)*100) ?>%</p>
 

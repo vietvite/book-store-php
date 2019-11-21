@@ -4,8 +4,6 @@
 
   $bookId = $_REQUEST["bookId"];
   $book = Book::getById($bookId);
-
-  echo '<pre>' . var_export($book, true) . '</pre>';
 ?>
 
 <!DOCTYPE html>
