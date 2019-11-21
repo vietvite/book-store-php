@@ -2,7 +2,7 @@
   include_once('../models/book.php');
   $select = array('vanhoc', 'kynang');
   $category = Category::getCategoryByIds($select);
-  $bookByCategory = Book::getBookByCategory($category, 8);
+  $bookByCategory = Book::getManyByCategories($category, 8);
 ?>
 <?php foreach ($bookByCategory as $value) { 
   $value = (object) $value;

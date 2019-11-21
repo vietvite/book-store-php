@@ -1,6 +1,6 @@
 <?php 
-  include_once('../models/book.php');
-	$books = Book::getBestSales();
+	include_once('../models/book.php');
+	$books = Book::getBooks('books', 10);
 ?>
 
 <div class="mt-5">

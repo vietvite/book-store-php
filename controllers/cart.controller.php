@@ -15,7 +15,7 @@
   include_once('./response.php');
 
   if($op === "add") {
-    $book = Book::getById($bookId);
+    $book = Book::getOneById($bookId);
     if(!isset($book)) return;
 
     // if current cart is empty, add new

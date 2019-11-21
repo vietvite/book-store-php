@@ -3,7 +3,7 @@
   include_once('../models/book.php');
 
   $bookId = $_REQUEST["bookId"];
-  $book = Book::getById($bookId);
+  $book = Book::getOneById($bookId);
 ?>
 
 <!DOCTYPE html>

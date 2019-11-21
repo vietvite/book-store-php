@@ -24,80 +24,51 @@
       $this->imageUrl = $imageUrl;
     }
 
-    static function getAllBooks() {
+    /**
+     * NOTE: this is temporary function to show bestsale
+     * 
+     * @param String $dbName - name of database need to query
+     * @param Int $limit - limit of items
+     * 
+     * @return Array
+     */
+    static function getBooks($dbName = 'books', $limit = -1) {
       $conn = Database::getConnection();
 
-      $query = "SELECT * FROM books";
+      $query =
+        $limit > 0
+        ? "SELECT * FROM books LIMIT $limit"
+        : "SELECT * FROM books";
       $rs = $conn->query($query);
-      $returnArr = array();
-      if($rs->num_rows > 0) {
-        while ($row = $rs->fetch_assoc()) {
-          array_push($returnArr, new Book(
-            $row["id"],
-            $row["bookname"],
-            $row["author"],
-            $row["price"],
-            $row["coverPrice"],
-            $row["description"],
-            $row["categoryId"],
-            $row["quantity"],
-            $row["imageUrl"]
-          ));
-        };
-      }
 
-      return $returnArr;
+      return $rs->num_rows > 0 ? fetchBook($rs) : null;
     }
 
-    static function getBestSales() {
-      $conn = Database::getConnection();
-
-      $query = "SELECT * FROM books LIMIT 10";
-      $rs = $conn->query($query);
-      $returnArr = array();
-      if($rs->num_rows > 0) {
-        while ($row = $rs->fetch_assoc()) {
-          array_push($returnArr, new Book(
-            $row["id"],
-            $row["bookname"],
-            $row["author"],
-            $row["price"],
-            $row["coverPrice"],
-            $row["description"],
-            $row["categoryId"],
-            $row["quantity"],
-            $row["imageUrl"]
-          ));
-        };
-      }
-
-      return $returnArr;
-    }
-
-    static function getById($bookId) {
+    /**
+     * Get one detail book
+     * 
+     * @param String $bookId - book id
+     * 
+     * @return Object
+     */
+    static function getOneById($bookId) {
       $conn = Database::getConnection();
 
       $query = "SELECT * FROM books WHERE id='$bookId'";
       $rs = $conn->query($query);
-      $returnArr = array();
-      if($rs->num_rows > 0) {
-        $row = $rs->fetch_assoc();
-        $returnArr = new Book(
-          $row["id"],
-          $row["bookname"],
-          $row["author"],
-          $row["price"],
-          $row["coverPrice"],
-          $row["description"],
-          $row["categoryId"],
-          $row["quantity"],
-          $row["imageUrl"]
-        );
-      }
-      return $returnArr;
+
+      return $rs->num_rows > 0 ? fetchBook($rs)[0] : null;
     }
 
-    static function getBookByCategory($categories = array(), $limit = -1) {
+    /**
+     * Get books by categories
+     * 
+     * @param Array - Array of category properties
+     * @param Int - Quantity limit of query items
+     * 
+     * @return Array
+     */
+    static function getManyByCategories($categories = array(), $limit = -1) {
       $conn = Database::getConnection();
 
       $returnArr = array();
@@ -109,29 +80,41 @@
         $rs = $conn->query($query);
 
         if($rs->num_rows > 0) {
-          $books = array();
-          while ($row = $rs->fetch_assoc()) {
-            array_push($books, new Book(
-              $row["id"],
-              $row["bookname"],
-              $row["author"],
-              $row["price"],
-              $row["coverPrice"],
-              $row["description"],
-              $row["categoryId"],
-              $row["quantity"],
-              $row["imageUrl"]
-            ));
-          };
-          $booksByCategory = array(["categoryId" => $value->categoryId, "categoryName" => $value->categoryName, "books" => $books]);
+          $booksByCategory = array([
+            "categoryId" => $value->categoryId, 
+            "categoryName" => $value->categoryName, 
+            "books" => fetchBook($rs)]);
           $returnArr = array_merge($returnArr, $booksByCategory);
         }
       }
-      // echo '<pre>' . var_export($returnArr, true) . '</pre>';
 
       return $returnArr;
     }
+  }
 
+  // Helper function
 
+  /**
+   * @param mysqli_result $pointer
+   * 
+   * @return array $books
+   */
+  function fetchBook($pointer) {
+    $books = array();
+    while ($row = $pointer->fetch_assoc()) {
+      array_push($books, new Book(
+        $row["id"],
+        $row["bookname"],
+        $row["author"],
+        $row["price"],
+        $row["coverPrice"],
+        $row["description"],
+        $row["categoryId"],
+        $row["quantity"],
+        $row["imageUrl"]
+      ));
+    };
+
+    return $books;
   }
 ?>

@@ -22,7 +22,7 @@
         include_once('../models/book.php');
         $select = array($_REQUEST["categoryId"]);
         $category = Category::getCategoryByIds($select);
-        $booksByCategory = Book::getBookByCategory($category);
+        $booksByCategory = Book::getManyByCategories($category);
         
         $category = (object) $booksByCategory[0];
       ?>
