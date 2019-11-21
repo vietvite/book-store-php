@@ -33,12 +33,12 @@
               <img style="width: 26%;" alt="bookimg" src="../public/<?php echo $value->imageUrl ?>">
               <div>
                 <h5><?php echo $value->bookName ?></h5>
-                <p class="text-danger"><?php echo $value->price ?>đ</p>
+                <p class="text-danger"><?php echo number_format($value->price , 0, ',', '.'); ?>đ</p>
               </div>
             </div>
             
             <div class="d-flex flex-row">
-              <h5 class="mr-4" id="sumProductPrice<?php echo $value->bookId ?>"><?php echo $value->price * $value->quantity ?>đ</h5>
+              <h5 class="mr-4" id="sumProductPrice<?php echo $value->bookId ?>"><?php echo number_format($value->price * $value->quantity , 0, ',', '.'); ?>đ</h5>
               <div style="width: 79px;">
                 <div class="input-group input-group-sm">
                   <div class="input-group-prepend">
@@ -67,7 +67,7 @@
             <h4 class="font-weight-light">Thành tiền:</h4>
             <h4 id="sumCartPrice<?php $value->bookId ?>" class="font-weight-light">
               <?php
-                echo calcCartPrice($books);
+                echo number_format(calcCartPrice($books) , 0, ',', '.');
               ?>
               đ</h4>
           </div>
@@ -105,7 +105,7 @@
     xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         const rs = JSON.parse(this.responseText);
-        console.log(rs);
+        // console.log(rs);
         
         if(rs.error) return;
         

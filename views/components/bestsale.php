@@ -8,7 +8,7 @@
 	<hr>
 	<div class="owl-carousel owl-theme">
 	<?php foreach ($books as $key => $value) { ?>
-	<a href="detail.php?id=<?php echo $value->bookId ?>">
+	<a href="detail.php?bookId=<?php echo $value->bookId ?>">
 		<div class="item bg-primary"><img src="../public/<?php echo $value->imageUrl ?>" class="card-img-top" alt="img"></div>
 	</a>
 	<?php } ?>

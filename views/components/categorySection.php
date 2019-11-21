@@ -23,7 +23,7 @@
               <p class="text-muted d-inline align-top" style="text-decoration: line-through; font-size: 0.75rem"><?php echo $value->coverPrice ?> đ</p>
               <p class="font-weight-bold d-inline pl-2 pl-md-4"><?php echo round((($value->price - $value->coverPrice)/$value->coverPrice)*100) ?>%</p>
 
-              <p class="text-danger mb-1"><?php echo $value->price ?> đ</p>
+              <p class="text-danger mb-1"><?php echo number_format($value->price , 0, ',', '.'); ?> đ</p>
               <button onclick="checkout(event,'<?php echo $value->bookId ?>')" class="btn btn-danger btn-sm" title="Thanh toán"><i class="px-2 fas fa-shopping-cart"></i></button>
               <button onclick="addCart(event,'<?php echo $value->bookId ?>')" class="btn btn-danger btn-sm"><i class="px-2 fas fa-plus" title="Thêm vào giỏ"></i></button>
             </div>

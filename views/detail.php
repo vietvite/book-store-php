@@ -35,8 +35,8 @@
         <div class="px-0 px-md-3">
           <h4 class="h4 mt-2"><?php echo $book->bookName ?></h4>
           <p><?php echo $book->author ?></p>
-          <p class="text-muted d-inline align-top" style="text-decoration: line-through; font-size: 0.75rem"><?php echo $book->coverPrice ?>đ</p>
-          <p class="text-danger font-weight-bold"><?php echo $book->price ?>đ</p>
+          <p class="text-muted d-inline align-top" style="text-decoration: line-through; font-size: 0.75rem"><?php echo number_format($book->coverPrice , 0, ',', '.'); ?>đ</p>
+          <p class="text-danger font-weight-bold"><?php echo number_format($book->price , 0, ',', '.'); ?>đ</p>
           <button class="btn btn-sm btn-outline-danger mr-2"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
           <a href="cart.php?op=add&id=<?php echo $book->bookId ?>"><button class="btn btn-sm btn-danger mx-1">Thanh toán</button></a>
           <button class="btn btn-sm border-0" title="Yêu thích"><i class="fas fa-heart text-danger"></i></button>
