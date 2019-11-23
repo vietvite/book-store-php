@@ -1,28 +1,98 @@
 <?php
   include_once('../models/cart.php');
   include_once('../models/book.php');
-
-  $op = $_REQUEST["op"];
-  $bookId = $_REQUEST["bookId"];
-  if ($op === "") return;
-  if ($bookId === "") return;
-
-  session_start();
-  // $_SESSION["cart"] = null;
-  $cart = $_SESSION["cart"]; // typeof cart is an array
-
   include_once('../helpers/index.php');
   include_once('./response.php');
 
-  if($op === "add") {
+  $op = $_REQUEST['op'];
+  $bookId = $_REQUEST['bookId'];
+  if ($op === '') return resError(['msg' => 'URL không hợp lệ']);
+  if ($bookId === '') return resError(['msg' => 'Không tìm thấy sách']);
+
+  session_start();
+  $rCart = $_SESSION['cart']; // typeof rootCart is an array
+
+  /**
+   * Handle request
+   */
+  if($op === 'add') {
     $book = Book::getOneById($bookId);
-    if(!isset($book)) return;
+    if(!isset($book)) {
+      return resError(['msg' => 'Không tìm thấy sách']);
+    };
 
     // if current cart is empty, add new
+    if(!isset($rCart)) {
+      $cart = initCart($book);
+    } else {
+      $cart = addCart($rCart, $bookId, $book);
+    }
+    return $_SESSION['cart'] = $cart;
+  }
+
+  if($op === 'up' || $op === 'down') {
+    $result = $op === 'up' 
+      ? updateCart($rCart, $bookId, 1) 
+      : updateCart($rCart, $bookId, -1);
+
+    if($result['error']) return resError();
+
+    $_SESSION['cart'] = $result['cart'];
+    
+    return resSuccess([
+      'quantity' => $result['quantity'], 
+      'itemPrice' => $result['itemPrice'], 
+      'totalPrice' => calcCartPrice($rCart)
+    ]);
+  }
+
+  if($op === 'remove') {
+    $cart = removeCart($rCart, $bookId);
+
+    $_SESSION['cart'] = $cart;
+
     if(!isset($cart)) {
-      var_dump(isset($cart));
-      $cart = array();
-      array_push($cart, new Cart(
+      return resSuccess(['emptyCart' => true]);
+    }
+    
+    return resSuccess([
+      'emptyCart' => false, 
+      'totalPrice' => calcCartPrice($cart)
+    ]);
+  }
+
+  /**
+   * Handle function
+   */
+  function initCart($book) {
+    $cart = array();
+    array_push($cart, new Cart(
+      $book->bookId,
+      $book->bookName,
+      $book->author,
+      $book->price,
+      1,
+      $book->imageUrl,
+    ));
+
+    return $cart;
+  }
+
+  function addCart($rCart, $bookId, $book) {
+    $bookExisted = false;
+    $cloneCart = $rCart;
+
+    // update quantity if book existed
+    foreach ($cloneCart as $value) {
+      if($value->bookId === $bookId) {
+        $value->quantity++;
+        $bookExisted = true;
+      }
+    }
+
+    // if book not existed, add new
+    if(!$bookExisted) {
+      array_push($cloneCart, new Cart(
         $book->bookId,
         $book->bookName,
         $book->author,
@@ -30,90 +100,41 @@
         1,
         $book->imageUrl,
       ));
-    } else {
-      $bookExisted = false;
-      // if book existed, update quantity
-      foreach ($cart as $key => $value) {
-        if($value->bookId === $bookId) {
-          $value->quantity++;
-          $bookExisted = true;
+    }
+
+    return $cloneCart;
+  }
+
+  function updateCart($rCart, $bookId, $arg) {
+    $cloneCart = $rCart;
+    foreach ($cloneCart as $value) {
+      if($value->bookId === $bookId) {
+        if($arg < 0 && $value->quantity <= 1) {
+          // if operation is down quantity
+          // and current quantity is equal 1, prevent this operation
+          return array('error' => true);
         }
-      }
-
-      // if book not existed, add new
-      if(!$bookExisted) {
-        array_push($cart, new Cart(
-          $book->bookId,
-          $book->bookName,
-          $book->author,
-          $book->price,
-          1,
-          $book->imageUrl,
-        ));
-      }
-    }
-    $_SESSION["cart"] = $cart;
-    return;
-  }
-
-  if($op === "up") {
-    foreach ($cart as $key => $value) {
-      if($value->bookId === $bookId) {
-        $value->quantity++;
+        $value->quantity += $arg;
         $quantity = $value->quantity;
-        $sumProductPrice = $value->quantity * $value->price;
+        $itemPrice = $value->quantity * $value->price;
       }
     }
-    $_SESSION["cart"] = $cart;
-    
-    $resParams = array(
-      "quantity" => $quantity, 
-      "sumProductPrice" => $sumProductPrice, 
-      "sumCartPrice" => calcCartPrice($cart));
 
-    resSuccess($resParams);
+    return array(
+      'error' => false, 
+      'cart' => $cloneCart, 
+      'quantity' => $quantity, 
+      'itemPrice' => $itemPrice);
   }
 
-  if($op === "down") {
-    foreach ($cart as $key => $value) {
+  function removeCart($rCart, $bookId) {
+    $cloneCart = $rCart;
+    foreach ($cloneCart as $key => $value) {
       if($value->bookId === $bookId) {
-        if($value->quantity <= 1) {
-          resError();
-          return;
-        }
-        $value->quantity--;
-        $quantity = $value->quantity;
-        $sumProductPrice = $value->quantity * $value->price;
+        unset($cloneCart[$key]);
       }
-    }
-    $_SESSION["cart"] = $cart;
-    $resParams = array(
-      "quantity" => $quantity, 
-      "sumProductPrice" => $sumProductPrice, 
-      "sumCartPrice" => calcCartPrice($cart));
-
-    resSuccess($resParams);
-  }
-
-  if($op === "remove") {
-    foreach ($cart as $key => $value) {
-      if($value->bookId === $bookId) {
-        unset($cart[$key]);
-      }
-    }
-    if(empty($cart)) $cart = null;
-    $_SESSION["cart"] = $cart;
-
-    if($cart === null) {
-      resSuccess(["emptyCart" => true]);
-      return;
     }
     
-    $resParams = array(
-      "emptyCart" => false, 
-      "sumCartPrice" => calcCartPrice($cart));
-
-    resSuccess($resParams);
+    return empty($cloneCart) ? null : $cloneCart;
   }
-
 ?>
