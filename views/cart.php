@@ -38,7 +38,7 @@
             </div>
             
             <div class="d-flex flex-row">
-              <h5 class="mr-4" id="sumProductPrice<?php echo $value->bookId ?>"><?php echo number_format($value->price * $value->quantity , 0, ',', '.'); ?>đ</h5>
+              <h5 class="mr-4" id="itemPrice<?php echo $value->bookId ?>"><?php echo number_format($value->price * $value->quantity , 0, ',', '.'); ?>đ</h5>
               <div style="width: 79px;">
                 <div class="input-group input-group-sm">
                   <div class="input-group-prepend">
@@ -65,7 +65,7 @@
         <div class="col-md-3 bg-white p-3">
           <div class="d-flex flex-row justify-content-between">
             <h4 class="font-weight-light">Thành tiền:</h4>
-            <h4 id="sumCartPrice<?php $value->bookId ?>" class="font-weight-light">
+            <h4 id="totalPrice<?php $value->bookId ?>" class="font-weight-light">
               <?php
                 echo number_format(calcCartPrice($books) , 0, ',', '.');
               ?>
@@ -105,13 +105,12 @@
     xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         const rs = JSON.parse(this.responseText);
-        // console.log(rs);
         
         if(rs.error) return;
         
         document.getElementById(`quantity${bookId}`).value = rs.quantity;
-        document.getElementById(`sumProductPrice${bookId}`).innerHTML = rs.sumProductPrice + 'đ';
-        document.getElementById(`sumCartPrice`).innerHTML = rs.sumCartPrice + ' đ';
+        document.getElementById(`itemPrice${bookId}`).innerHTML = formatNumber(rs.itemPrice) + 'đ';
+        document.getElementById(`totalPrice`).innerHTML = formatNumber(rs.totalPrice) + ' đ';
       }
     };
     if (op == 'up') {
@@ -128,8 +127,6 @@
     xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         const rs = JSON.parse(this.responseText);
-        console.log({rs});
-        
         // if(rs.emptyCart) {
         //   location.reload();
         //   return;
@@ -137,11 +134,15 @@
         if(rs.emptyCart) window.location.href = "http://localhost/book-store-php/views/home.php";
         const item = document.getElementById(`book${bookId}`);
         item.parentNode.removeChild(item);
-        document.getElementById(`sumCartPrice`).innerHTML = rs.sumCartPrice + ' đ';
+        document.getElementById(`totalPrice`).innerHTML = formatNumber(rs.totalPrice) || 0 + ' đ';
       }
     };
     xmlhttp.open("GET", `../controllers/cart.controller.php?op=remove&bookId=${bookId}`, true);
     xmlhttp.send();
+  }
+
+  function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
   }
   </script>
 </body>
