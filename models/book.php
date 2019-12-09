@@ -90,6 +90,34 @@
 
       return $returnArr;
     }
+
+    /**
+     * Add one book
+     * 
+     * @param String $bookId - book id
+     * 
+     * @return Object
+     */
+    static function addOne(
+      $id,
+      $bookName,
+      $author,
+      $coverPrice,
+      $discount,
+      $inventory,
+      $categoryId,
+      $description,
+      $imageUrl
+    ) {
+      $conn = Database::getConnection();
+
+      $price = $coverPrice - ($coverPrice * 20/100);
+      $query = "INSERT INTO `books`(`id`, `bookname`, `author`, `categoryId`, `description`, `price`, `coverPrice`, `quantity`, `imageUrl`) 
+      VALUES ('$id', '$bookName', '$author', '$categoryId', '$description', '$price', '$coverPrice', '$inventory', '$imageUrl')";
+      $rs = $conn->query($query);
+
+      return $rs;
+    }
   }
 
   // Helper function
