@@ -14,3 +14,8 @@
 
 ### Detail page
 ![alt text](https://github.com/vietvite/book-store-php/blob/master/book-store-detailpage.png)
+
+## TODO:
+- Login
+- Signup
+- Payment
