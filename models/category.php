@@ -24,6 +24,7 @@
           ));
         };
       }
+      $conn->close();
 
       return $returnArr;
     }
@@ -43,6 +44,7 @@
           ));
         };
       }
+      $conn->close();
 
       return $returnArr;
     }

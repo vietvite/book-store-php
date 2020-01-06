@@ -17,6 +17,7 @@
 
       $query = "INSERT INTO `cart`(`categoryId`, `categoryName`) VALUES ([value-1],[value-2])";
       $rs = $conn->query($query);
+      $conn->close();
 
       return $rs->num_rows > 0 ? fetchBook($rs) : null;
     }

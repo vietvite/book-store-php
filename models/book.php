@@ -40,6 +40,7 @@
         ? "SELECT * FROM books LIMIT $limit"
         : "SELECT * FROM books";
       $rs = $conn->query($query);
+      $conn->close();
 
       return $rs->num_rows > 0 ? fetchBook($rs) : null;
     }
@@ -56,6 +57,7 @@
 
       $query = "SELECT * FROM books WHERE id='$bookId'";
       $rs = $conn->query($query);
+      $conn->close();
 
       return $rs->num_rows > 0 ? fetchBook($rs)[0] : null;
     }
@@ -87,6 +89,7 @@
           $returnArr = array_merge($returnArr, $booksByCategory);
         }
       }
+      $conn->close();
 
       return $returnArr;
     }
@@ -115,6 +118,7 @@
       $query = "INSERT INTO `books`(`id`, `bookname`, `author`, `categoryId`, `description`, `price`, `coverPrice`, `quantity`, `imageUrl`) 
       VALUES ('$id', '$bookName', '$author', '$categoryId', '$description', '$price', '$coverPrice', '$inventory', '$imageUrl')";
       $rs = $conn->query($query);
+      $conn->close();
 
       return $rs;
     }
